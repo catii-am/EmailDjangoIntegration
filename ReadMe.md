@@ -72,7 +72,7 @@
 6. Нажмите "Обновить письма", чтобы получить и отобразить последние письма.
 
 ## Структура проекта
-- mail_integration/
+- EmailDjangoIntegration/
 - ├── mails/
 - │ ├── migrations/
 - │ ├── templates/
