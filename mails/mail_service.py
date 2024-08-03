@@ -96,7 +96,7 @@ class MailService:
 
                         file_name = part.get_filename()
                         if bool(file_name):
-                            attachments.append(file_name)
+                            attachments.append(decode_header(part.get_filename())[0][0].decode())
 
                 if self.email_account.provider == 'mailru':
                     body = self._process_mailru_body(body)
