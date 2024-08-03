@@ -28,7 +28,7 @@
 1. Клонируйте репозиторий:
 
     ```sh
-    git clone https://github.com/yourusername/mail-integration.git
+    git clone https://github.com/catii-am/EmailDjangoIntegration
     cd mail-integration
     ```
 
