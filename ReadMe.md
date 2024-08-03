@@ -29,7 +29,7 @@
 
     ```sh
     git clone https://github.com/catii-am/EmailDjangoIntegration
-    cd mail-integration
+    cd EmailDjangoIntegration
     ```
 
 2. Создайте виртуальное окружение и активируйте его:
