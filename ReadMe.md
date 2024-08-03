@@ -76,10 +76,9 @@
 - ├── mails/
 - │ ├── migrations/
 - │ ├── templates/
-- │ │ └── mails/
+- │ │ ├── mails/
 - │ │ ├── email_list.html
-- │ │ ├── index.html
-- │ │ └── confirm_update.html
+- │ │ └── index.html
 - │ ├── init.py
 - │ ├── admin.py
 - │ ├── apps.py
