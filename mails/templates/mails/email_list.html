@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Mail Integration</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        #progress-bar {
+            width: 100%;
+            background-color: #f3f3f3;
+        }
+
+        #progress {
+            width: 0;
+            height: 30px;
+            background-color: #4caf50;
+            text-align: center;
+            line-height: 30px;
+            color: white;
+        }
+
+        #update-emails:disabled {
+            background-color: #d3d3d3;
+        }
+    </style>
+</head>
+<body>
+    <h1>Mail Integration</h1>
+
+    <h2>Switch Email Account</h2>
+    <ul>
+        {% for account in email_accounts %}
+            <li>
+                {{ account.email }}
+                <form method="post" action="{% url 'email_list' account.id %}" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit">Select</button>
+                </form>
+            </li>
+        {% endfor %}
+    </ul>
+
+    <button id="update-emails">Update Emails</button>
+    <div id="progress-bar">
+        <div id="progress">0%</div>
+    </div>
+    <table id="emails">
+        <thead>
+            <tr>
+                <th>Subject</th>
+                <th>Sent Date</th>
+                <th>Received Date</th>
+                <th>Body</th>
+                <th>Attachments</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for email in messages %}
+                <tr>
+                    <td>{{ email.subject }}</td>
+                    <td>{{ email.sent_date }}</td>
+                    <td>{{ email.received_date }}</td>
+                    <td>{{ email.body }}</td>
+                    <td>{{ email.attachments|join:", " }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <script>
+        var socket = new WebSocket('ws://' + window.location.host + '/ws/mails/');
+
+        socket.onmessage = function(e) {
+            var data = JSON.parse(e.data);
+
+            if (data.status) {
+                var progress = data.progress;
+                var progressPercentage = (parseInt(progress.split('/')[0]) / parseInt(progress.split('/')[1])) * 100;
+                $('#progress').css('width', progressPercentage + '%');
+                $('#progress').text(progress);
+            } else {
+                var email = data;
+                $('#emails tbody').append(
+                    '<tr><td>' + email.subject + '</td>' +
+                    '<td>' + email.sent_date + '</td>' +
+                    '<td>' + email.received_date + '</td>' +
+                    '<td>' + email.body + '</td>' +
+                    '<td>' + email.attachments.join(', ') + '</td></tr>'
+                );
+            }
+        };
+
+        socket.onopen = function(e) {
+            console.log('WebSocket connection opened');
+        };
+
+        socket.onclose = function(e) {
+            console.log('WebSocket connection closed');
+            $('#update-emails').prop('disabled', false);
+        };
+
+        socket.onerror = function(e) {
+            console.error('WebSocket error', e);
+            $('#update-emails').prop('disabled', false);
+        };
+
+        $('#update-emails').click(function() {
+            if (socket.readyState === WebSocket.OPEN) {
+                $('#progress').css('width', '0%').text('0%');
+                $('#emails tbody').empty();
+                $('#update-emails').prop('disabled', true);
+                socket.send(JSON.stringify({'email_account_id': {{ email_account_id }}}));
+            } else {
+                console.error('WebSocket is not open');
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Add or Change Email Account</title>
+</head>
+<body>
+    <h1>Add or Change Email Account</h1>
+    <div>
+        <a href="{% url 'index' %}">Home</a>
+    </div>
+
+    {% if email_accounts %}
+        <h2>Existing Email Accounts</h2>
+        <ul>
+            {% for account in email_accounts %}
+                <li>
+                    {{ account.email }}
+                    <form method="post" action="{% url 'email_list' account.id %}" style="display: inline;">
+                        {% csrf_token %}
+                        <button type="submit">Select</button>
+                    </form>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No email accounts found. Please add a new one below:</p>
+    {% endif %}
+
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Save</button>
+    </form>
+</body>
+</html>
